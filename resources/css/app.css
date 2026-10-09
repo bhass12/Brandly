@@ -1,0 +1,256 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@layer base {
+    body {
+        font-family: 'Poppins';
+        scroll-behavior: smooth;
+    }
+}
+.nav-link {
+    position: relative;
+    color: #555;
+    transition: color 0.3s ease;
+}
+
+/* Link yang sedang aktif */
+.nav-link.active {
+    color: #000;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+
+
+ /* Tandai bahwa JS aktif supaya elemen hanya disembunyikan oleh JS */
+        html.js [data-reveal] {
+            opacity: 0;
+            transform: translate3d(0, 40px, 0);
+            will-change: opacity, transform;
+        }
+
+        html.js [data-reveal].reveal-in {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+            transition:
+                opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms),
+                transform 0.9s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms);
+            will-change: auto;
+        }
+
+        /* Variasi arah masuk */
+        html.js [data-reveal="down"] {
+            transform: translate3d(0, -40px, 0);
+        }
+
+        html.js [data-reveal="left"] {
+            transform: translate3d(40px, 0, 0);
+        }
+
+        html.js [data-reveal="right"] {
+            transform: translate3d(-40px, 0, 0);
+        }
+
+        html.js [data-reveal="zoom"] {
+            transform: scale(0.94);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            html.js [data-reveal],
+            html.js [data-reveal="down"],
+            html.js [data-reveal="left"],
+            html.js [data-reveal="right"],
+            html.js [data-reveal="zoom"] {
+                opacity: 1 !important;
+                transform: none !important;
+                transition: none !important;
+            }
+        }
+
+        /* =========================================================
+           Testimonial Carousel — Fade out / Fade in + translateY
+           ========================================================= */
+        .tsm {
+            /* Fase keluar (estimasi) */
+            --tsm-out: 240ms;
+            /* Fase masuk + jeda supaya berurutan, bukan crossfade datar */
+            --tsm-in: 380ms;
+            --tsm-in-delay: 120ms;
+            --tsm-ease: cubic-bezier(0.4, 0, 0.2, 1);
+            /* Diatur JS sesuai arah navigasi (10px / -10px) */
+            --tsm-from: 10px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .tsm__viewport {
+            display: grid;
+            place-items: center;
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+
+        /* Semua slide ditumpuk di grid area yang sama */
+        .tsm__slide {
+            grid-area: 1 / 1;
+            /* 2 kartu x 27.5rem + gap 5rem = 60rem */
+            width: min(100%, 60rem);
+            opacity: 0;
+            visibility: hidden;
+            transition:
+                opacity var(--tsm-out) var(--tsm-ease) 0ms,
+                transform var(--tsm-out) var(--tsm-ease) 0ms,
+                visibility 0s linear var(--tsm-out);
+        }
+
+        /* Baris 2 kartu di dalam satu slide */
+        .tsm__pair {
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            gap: 5rem;
+        }
+
+        /* Offset masuk mengikuti arah (JS mengisi --tsm-from) */
+        .tsm__slide:not(.is-active) {
+            transform: translateY(var(--tsm-from));
+        }
+
+        .tsm__slide.is-active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            transition:
+                opacity var(--tsm-in) var(--tsm-ease) var(--tsm-in-delay),
+                transform var(--tsm-in) var(--tsm-ease) var(--tsm-in-delay),
+                visibility 0s linear 0ms;
+        }
+
+        /* Indikator titik */
+        .tsm__dot {
+            width: 8px;
+            height: 8px;
+            padding: 0;
+            border: 0;
+            border-radius: 9999px;
+            background: #d9d5cd;
+            cursor: pointer;
+            transition: background 0.35s ease, width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tsm__dot:hover {
+            background: #b58757;
+        }
+
+        .tsm__dot[aria-selected="true"] {
+            width: 26px;
+            background: #8a502a;
+        }
+
+        .tsm__dot:focus-visible {
+            outline: 2px solid #8a502a;
+            outline-offset: 3px;
+        }
+
+        .tsm__nav {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border: 0;
+            cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+        }
+
+        .tsm__nav:hover {
+            transform: scale(1.06);
+            box-shadow: 0 10px 25px -8px rgba(138, 80, 42, 0.35);
+        }
+
+        .tsm__nav:active {
+            transform: scale(0.94);
+        }
+
+        /* Fokus keyboard harus selalu terlihat jelas */
+        .tsm__nav:focus-visible {
+            outline: 2px solid #8a502a;
+            outline-offset: 4px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .tsm__slide,
+            .tsm__slide.is-active {
+                transform: none !important;
+                transition-duration: 0ms !important;
+                transition-delay: 0ms !important;
+            }
+
+            .tsm__nav:hover,
+            .tsm__nav:active {
+                transform: none !important;
+            }
+        }
+
+        /* =========================================================
+           Hover Lift — kartu bahan baku (section About)
+           Lift kartu + zoom gambar + shadow lebih kuat
+           ========================================================= */
+        .ing-card {
+            /* memotong gambar saat di-zoom, juga menjaga rounded corner */
+            overflow: hidden;
+            box-shadow: 0 2px 10px -4px rgba(109, 111, 116, 0.16);
+            transition:
+                transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .ing-card__media {
+            overflow: hidden;
+        }
+
+        .ing-card__media img {
+            transform: scale(1);
+            transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+            will-change: transform;
+        }
+
+        /* Hanya di perangkat yang benar-benar mendukung hover,
+           supaya tidak ada efek "nempel" saat tap di layar sentuh */
+        @media (hover: hover) and (pointer: fine) {
+            /* Sengaja memakai .reveal-in agar specificity (0,4,1) mengalahkan
+               `html.js [data-reveal].reveal-in` (0,3,1) yang mengeset transition 0.9s.
+               Kalau tidak, hover ikut lambat 0.9s dan terasa berat. */
+            html.js .ing-card.reveal-in:hover {
+                transform: translate3d(0, -10px, 0);
+                box-shadow: 0 18px 35px -12px rgba(109, 111, 116, 0.38);
+                transition:
+                    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+                    box-shadow 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+            }
+
+            html.js .ing-card.reveal-in:hover .ing-card__media img {
+                transform: scale(1.08);
+            }
+
+            /* Keyboard: fokus di dalam kartu memberi affordance yang sama */
+            html.js .ing-card.reveal-in:focus-within {
+                transform: translate3d(0, -10px, 0);
+                box-shadow: 0 18px 35px -12px rgba(109, 111, 116, 0.38);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .ing-card,
+            .ing-card__media img {
+                transform: none !important;
+                transition: none !important;
+                will-change: auto !important;
+            }
+        }
